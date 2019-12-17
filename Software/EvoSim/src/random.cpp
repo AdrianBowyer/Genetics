@@ -5,7 +5,7 @@
  *      Author: Adrian Bowyer
  */
 
-#include "genome.h"
+#include "EvoSim.h"
 
 random_device rd;
 mt19937 e2(rd());

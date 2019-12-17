@@ -8,10 +8,6 @@
 #ifndef GENOME_H_
 #define GENOME_H_
 
-#include <random>
-
-using namespace std;
-
 const int geneCount = 100;
 const double engineerProportion = 0.04;
 const double mutateProportion = 0.04;
@@ -24,23 +20,29 @@ double Gaussian(double sd);
 class Genome
 {
 public:
-	Genome(bool editor);
+	Genome(bool editor, Genome* n);
 	double DegreeOfMatch(Genome* genome);
 	double Fitness();
 	void Mutate();
 	void Edit();
 	Genome* ChildWith(Genome* parent2);
+	Genome* Next();
+	Genome* Previous();
+	bool IAmAnEngineer();
 
 private:
 	double genes[geneCount];
 	bool engineer;
+	Genome* next;
 
 };
 
 extern Genome* environment;
 
+// Lazy evaluation
+
 inline double Genome::Fitness() { return DegreeOfMatch(environment); }
-
-
+inline Genome* Genome::Next() { return next; }
+inline bool Genome::IAmAnEngineer() { return engineer; }
 
 #endif /* GENOME_H_ */

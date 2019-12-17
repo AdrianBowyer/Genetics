@@ -5,15 +5,16 @@
  *      Author: Adrian Bowyer
  */
 
-#include "genome.h"
+#include "EvoSim.h"
 
-Genome::Genome(bool editor)
+Genome::Genome(bool editor, Genome* n)
 {
 	engineer = editor;
 	for(int g = 0; g < geneCount; g++)
 	{
 		genes[g] = Uniform();
 	}
+	next = n;
 }
 
 
@@ -39,6 +40,9 @@ void Genome::Mutate()
 				genes[g] = 1.0;
 		}
 	}
+
+	if(Uniform() < mutateProportion)
+		engineer = !engineer;
 }
 
 
@@ -67,7 +71,7 @@ void Genome::Edit()
 
 Genome* Genome::ChildWith(Genome* parent2)
 {
-	Genome* child = new Genome(false);
+	Genome* child = new Genome(false, next);
 
 	for(int g = 0; g < geneCount; g++)
 	{
@@ -86,6 +90,7 @@ Genome* Genome::ChildWith(Genome* parent2)
 	}
 	child->Mutate();
 	child->Edit();
+	next = child;
 	return child;
 }
 

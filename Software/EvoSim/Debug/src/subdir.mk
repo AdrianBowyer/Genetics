@@ -6,16 +6,19 @@
 CPP_SRCS += \
 ../src/EvoSim.cpp \
 ../src/genome.cpp \
+../src/population.cpp \
 ../src/random.cpp 
 
 OBJS += \
 ./src/EvoSim.o \
 ./src/genome.o \
+./src/population.o \
 ./src/random.o 
 
 CPP_DEPS += \
 ./src/EvoSim.d \
 ./src/genome.d \
+./src/population.d \
 ./src/random.d 
 
 
