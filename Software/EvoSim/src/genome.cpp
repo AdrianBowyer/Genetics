@@ -95,3 +95,31 @@ Genome* Genome::ChildWith(Genome* parent2)
 }
 
 
+void Genome::PrintGenome()
+{
+	cout << endl << "Genome of ";
+	if(engineer)
+		cout << "an engineer" << endl;
+	else
+		cout << "a non engineer" << endl;
+	for(int g = 0; g < geneCount; g++)
+	{
+		cout << genes[g] << ' ';
+		if(!((g+1)%20))
+			cout << endl;
+	}
+	cout << endl << endl;
+}
+
+
+void Genome::Unlink(Genome* previous)
+{
+	if(previous)
+	{
+		previous->next = next;
+	}
+
+	delete this;
+}
+
+

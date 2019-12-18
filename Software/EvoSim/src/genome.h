@@ -29,6 +29,8 @@ public:
 	Genome* Next();
 	Genome* Previous();
 	bool IAmAnEngineer();
+	void Unlink(Genome* previous);
+	void PrintGenome();
 
 private:
 	double genes[geneCount];

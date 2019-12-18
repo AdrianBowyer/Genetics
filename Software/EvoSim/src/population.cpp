@@ -25,7 +25,23 @@ void Population::Breed()
 
 void Population::Cull(double minimumFitness)
 {
-
+	Genome* g = start;
+	Genome* nxt;
+	Genome* previous = NULL;
+	while(g)
+	{
+		nxt = g->Next();
+		if(g->Fitness() < minimumFitness)
+		{
+			if(g == start)
+				start = nxt;
+			g->Unlink(previous);
+		} else
+		{
+			previous = g;
+		}
+		g = nxt;
+	}
 }
 
 int Population::EngineerCount()
@@ -53,6 +69,7 @@ int Population::PopulationCount()
 	return populationCount;
 }
 
+
 void Population::Histogram()
 {
 	int fitness[histogramSize];
@@ -63,20 +80,29 @@ void Population::Histogram()
 	int populationCount = 0;
 	int engineerCount = 0;
 	int histogramMaximum = 0;
+	double average = 0.0;
+	double sd = 0.0;
 	while(g)
 	{
 		populationCount++;
 		if(g->IAmAnEngineer())
 			engineerCount++;
-		int fit = round(g->Fitness()*(double)histogramSize);
+		double f = g->Fitness();
+		average += f;
+		sd += f*f;
+		int fit = round(f*(double)histogramSize);
 		fitness[fit]++;
 		if(fitness[fit] > histogramMaximum)
 			histogramMaximum = fitness[fit];
 		g = g->Next();
 	}
 
+	average = average/(double)populationCount;
+	sd = sqrt(sd/(double)populationCount - average*average);
 
-	cout << endl << "Population: " << populationCount << endl << "Engineers: " << engineerCount << endl << endl;
+
+	cout << endl << "Population: " << populationCount << endl << "Engineers: " << engineerCount << endl;
+	cout << endl << "Average fitness: " << average << endl << "Fitness standard deviation: " << sd << endl << endl;
 	for(int f = 0; f < histogramSize; f++)
 	{
 		cout << (double)f/(double)histogramSize << ' ';

@@ -8,7 +8,7 @@
 #ifndef POPULATION_H_
 #define POPULATION_H_
 
-const int histogramSize = 30;
+const int histogramSize = 20;
 const int maxHistogram = 50;
 
 class Population
@@ -20,11 +20,14 @@ public:
 	int EngineerCount();
 	int PopulationCount();
 	void Histogram();
+	Genome* RandomIndividual();
 
 private:
 	Genome* FindIndividual(int i);
 	Genome* start;
 };
+
+inline Genome* Population::RandomIndividual() { return FindIndividual((int)((double)PopulationCount()*Uniform())); }
 
 
 
