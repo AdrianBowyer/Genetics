@@ -48,6 +48,9 @@ void Genome::Mutate()
 
 void Genome::Edit()
 {
+	if(control)
+		return;
+
 	if(!engineer)
 		return;
 

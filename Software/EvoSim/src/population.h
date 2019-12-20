@@ -16,19 +16,28 @@ class Population
 public:
 	Population();
 	void Breed();
-	void Cull(double minimumFitness);
+	void Cull();
 	int EngineerCount();
 	int PopulationCount();
-	void Histogram();
 	Genome* RandomIndividual();
+	double AverageFitness();
+	double FitnessStandardDeviation();
+	void PrintStatistics();
 
 private:
+	void Statistics();
 	Genome* FindIndividual(int i);
 	Genome* start;
+	int fitness[histogramSize];
+	int histogramMaximum;
+	int populationCount;
+	int engineerCount;
+	double fitnessAverage;
+	double fitnessStandardDeviation;
+	bool statisticsValid;
 };
 
 inline Genome* Population::RandomIndividual() { return FindIndividual((int)((double)PopulationCount()*Uniform())); }
-
 
 
 #endif /* POPULATION_H_ */

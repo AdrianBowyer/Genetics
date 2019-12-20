@@ -9,29 +9,46 @@
 
 Population::Population()
 {
+	// Adam & Eve
+
 	start = new Genome(false, NULL);
+	start = new Genome(false, start);
+
+	histogramMaximum = 0;
+	populationCount = 0;
+	engineerCount = 0;
+	fitnessAverage = 0.0;
+	fitnessStandardDeviation = 0.0;
+	statisticsValid = false;
 }
 
 void Population::Breed()
 {
-	int number = PopulationCount();
-
-	// NB this allows self-fertilisation
-
-	Genome* parent1 = FindIndividual((int)((double)number*Uniform()));
-	Genome* parent2 = FindIndividual((int)((double)number*Uniform()));
-	Genome* child = parent1->ChildWith(parent2);
+	Genome* parent1 = RandomIndividual();
+	Genome* parent2 = parent1;
+	int count = 0;
+	while(parent2 == parent1 && count < 10)
+	{
+		parent2 = RandomIndividual();
+		count++;
+	}
+	if(count >= 10)
+		cout << "Breed: can't find breeding pair!" << endl;
+	parent1->ChildWith(parent2);
+	statisticsValid = false;
 }
 
-void Population::Cull(double minimumFitness)
+void Population::Cull()
 {
+	Statistics();
+
 	Genome* g = start;
 	Genome* nxt;
 	Genome* previous = NULL;
 	while(g)
 	{
 		nxt = g->Next();
-		if(g->Fitness() < minimumFitness)
+		if(g->Fitness() < fitnessAverage)
 		{
 			if(g == start)
 				start = nxt;
@@ -42,67 +59,48 @@ void Population::Cull(double minimumFitness)
 		}
 		g = nxt;
 	}
+	statisticsValid = false;
 }
 
 int Population::EngineerCount()
 {
-	Genome* g = start;
-	int engineerCount = 0;
-	while(g)
-	{
-		if(g->IAmAnEngineer())
-			engineerCount++;
-		g = g->Next();
-	}
+	if(statisticsValid)
+		return engineerCount;
+	Statistics();
 	return engineerCount;
 }
 
 int Population::PopulationCount()
 {
-	Genome* g = start;
-	int populationCount = 0;
-	while(g)
-	{
-		populationCount++;
-		g = g->Next();
-	}
+	if(statisticsValid)
+		return populationCount;
+	Statistics();
 	return populationCount;
 }
 
-
-void Population::Histogram()
+double Population::AverageFitness()
 {
-	int fitness[histogramSize];
-	for(int f = 0; f < histogramSize; f++)
-		fitness[f] = 0;
+	if(statisticsValid)
+		return fitnessAverage;
+	Statistics();
+	return fitnessAverage;
+}
 
-	Genome* g = start;
-	int populationCount = 0;
-	int engineerCount = 0;
-	int histogramMaximum = 0;
-	double average = 0.0;
-	double sd = 0.0;
-	while(g)
-	{
-		populationCount++;
-		if(g->IAmAnEngineer())
-			engineerCount++;
-		double f = g->Fitness();
-		average += f;
-		sd += f*f;
-		int fit = round(f*(double)histogramSize);
-		fitness[fit]++;
-		if(fitness[fit] > histogramMaximum)
-			histogramMaximum = fitness[fit];
-		g = g->Next();
-	}
+double Population::FitnessStandardDeviation()
+{
+	if(statisticsValid)
+		return fitnessStandardDeviation;
+	Statistics();
+	return fitnessStandardDeviation;
+}
 
-	average = average/(double)populationCount;
-	sd = sqrt(sd/(double)populationCount - average*average);
+void Population::PrintStatistics()
+{
+	if(!statisticsValid)
+		Statistics();
 
-
-	cout << endl << "Population: " << populationCount << endl << "Engineers: " << engineerCount << endl;
-	cout << endl << "Average fitness: " << average << endl << "Fitness standard deviation: " << sd << endl << endl;
+	cout << endl << "Population: " << PopulationCount() << endl << "Engineers: " << engineerCount << endl;
+	cout << endl << "Average fitness: " << fitnessAverage << endl << "Fitness standard deviation: " << fitnessStandardDeviation << endl << endl;
 	for(int f = 0; f < histogramSize; f++)
 	{
 		cout << (double)f/(double)histogramSize << ' ';
@@ -111,7 +109,43 @@ void Population::Histogram()
 		cout << endl;
 	}
 	cout << endl;
+}
 
+
+void Population::Statistics()
+{
+//	if(statisticsValid)  // Should be OK. But better safe than sorry...
+//		return;
+
+	for(int f = 0; f < histogramSize; f++)
+		fitness[f] = 0;
+
+	Genome* g = start;
+
+	populationCount = 0;
+	engineerCount = 0;
+	fitnessAverage = 0.0;
+	fitnessStandardDeviation = 0.0;
+
+	while(g)
+	{
+		populationCount++;
+		if(g->IAmAnEngineer())
+			engineerCount++;
+		double f = g->Fitness();
+		fitnessAverage += f;
+		fitnessStandardDeviation += f*f;
+		int fit = round(f*(double)histogramSize);
+		fitness[fit]++;
+		if(fitness[fit] > histogramMaximum)
+			histogramMaximum = fitness[fit];
+		g = g->Next();
+	}
+
+	fitnessAverage = fitnessAverage/(double)populationCount;
+	fitnessStandardDeviation = sqrt(fitnessStandardDeviation/(double)populationCount - fitnessAverage*fitnessAverage);
+
+	statisticsValid = true;
 }
 
 Genome* Population::FindIndividual(int i)

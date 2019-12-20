@@ -40,6 +40,7 @@ private:
 };
 
 extern Genome* environment;
+extern bool control;
 
 // Lazy evaluation
 

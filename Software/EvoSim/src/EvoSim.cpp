@@ -12,6 +12,8 @@ Genome* environment;
 
 Population* population;
 
+bool control = false;
+
 // Remind the user what they can do.
 
 void Prompt()
@@ -19,6 +21,8 @@ void Prompt()
 	cout << endl << "Commands:" << endl;
 	cout << " b: - increase the population by breeding" << endl;
 	cout << " c: - cull low fitness members of the population" << endl;
+	cout << " E: - control experiment (no engineering)" << endl;
+	cout << " e: - experiment with engineering allowed" << endl;
 	cout << " g: - breed and cull many generations" << endl;
 	cout << " s: - print statistics" << endl;
 	cout << " i: - print genome of a random individual" << endl;
@@ -30,8 +34,7 @@ void Prompt()
 
 void Control()
 {
-	int populationCount, generations;
-	double f;
+	int populationTarget, generations;
 
 	cout << "Type h for help." << endl;
 	while(1)
@@ -43,36 +46,44 @@ void Control()
 		switch(c)
 		{
 		case 'b':
-			cout << "Number of children to breed: ";
-			cin >> populationCount;
-			for(int i = 0; i < populationCount; i++)
+			cout << "The population is " << population->PopulationCount() << " what is the population target? ";
+			cin >> populationTarget;
+			populationTarget -= population->PopulationCount();
+			for(int i = 0; i < populationTarget; i++)
 				population->Breed();
 			break;
 
+		case 'E':
+			control = true;
+			cout << "Control experiment - no engineering." << endl;
+			break;
+
+		case 'e':
+			control = false;
+			cout << "Engineering experiment - engineering allowed." << endl;
+			break;
+
 		case 'c':
-			cout << "Fitness value below which to cull: ";
-			cin >> f;
-			population->Cull(f);
+			population->Cull();
 			break;
 
 		case 'g':
 			cout << "Number of generations: ";
 			cin >> generations;
-			cout << "Fitness value below which to cull: ";
-			cin >> f;
 			cout << "Target population: ";
-			cin >> populationCount;
+			cin >> populationTarget;
 			for(int g = 0; g < generations; g++)
 			{
-				int diff = population->PopulationCount() - populationCount;
+				int diff = population->PopulationCount() - populationTarget;
 				for(int d = 0; d < diff; d++)
 					population->Breed();
-				population->Cull(f);
+				cout << "Generation " << g << " has average fitness " << population->AverageFitness() << endl;
+				population->Cull();
 			}
 			break;
 
 		case 's':
-			population->Histogram();
+			population->PrintStatistics();
 			break;
 
 		case 'i':
