@@ -32,9 +32,9 @@ void Prompt()
 
 // Decide how to process the results.
 
-void Control()
+void God()
 {
-	int populationTarget, generations;
+	int populationTarget, numberToKill, generations;
 
 	cout << "Type h for help." << endl;
 	while(1)
@@ -64,7 +64,10 @@ void Control()
 			break;
 
 		case 'c':
-			population->Cull();
+			cout << "The population is " << population->PopulationCount() << " cull how many? ";
+			cin >> numberToKill;
+			for(int i = 0; i < numberToKill; i++)
+				population->Cull();
 			break;
 
 		case 'g':
@@ -115,7 +118,7 @@ int main()
 	population = new Population();
 
 	Prompt();
-	Control();
+	God();
 
 	cout << "Bye!" << endl;
 
