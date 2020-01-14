@@ -33,7 +33,7 @@ public:
 	void PrintGenome();
 
 private:
-	double genes[2][geneCount];
+	double genes[geneCount];
 	bool engineer;
 	Genome* next;
 
@@ -44,6 +44,7 @@ extern bool control;
 
 // Lazy evaluation
 
+inline double Genome::Fitness() { return DegreeOfMatch(environment); }
 inline Genome* Genome::Next() { return next; }
 inline bool Genome::IAmAnEngineer() { return engineer; }
 

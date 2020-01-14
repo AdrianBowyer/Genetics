@@ -19,7 +19,6 @@ Population::Population()
 	engineerCount = 0;
 	fitnessAverage = 0.0;
 	fitnessStandardDeviation = 0.0;
-
 	statisticsValid = false;
 }
 
@@ -34,40 +33,32 @@ void Population::Breed()
 		count++;
 	}
 	if(count >= 10)
-		cout << "Breed(): can't find breeding pair!" << endl;
+		cout << "Breed: can't find breeding pair!" << endl;
 	parent1->ChildWith(parent2);
 	statisticsValid = false;
 }
 
 void Population::Cull()
 {
-	if(!statisticsValid)
-		Statistics();
+	Statistics();
 
-	double weak = 1.0;
-	Genome* weakest = NULL;
-	Genome* previousToWeakest = NULL;
-	Genome* previous = NULL;
-	double f;
 	Genome* g = start;
-
+	Genome* nxt;
+	Genome* previous = NULL;
 	while(g)
 	{
-		f = g->Fitness();
-		if(f < weak)
+		nxt = g->Next();
+		if(g->Fitness() < fitnessAverage)
 		{
-			weak = f;
-			weakest = g;
-			previousToWeakest = previous;
+			if(g == start)
+				start = nxt;
+			g->Unlink(previous);
+		} else
+		{
+			previous = g;
 		}
-		previous = g;
-		g = g->Next();
+		g = nxt;
 	}
-
-	if(weakest == start)
-		start = start->Next();
-	weakest->Unlink(previousToWeakest);
-
 	statisticsValid = false;
 }
 
