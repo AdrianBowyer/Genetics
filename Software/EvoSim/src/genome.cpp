@@ -9,12 +9,14 @@
 
 Genome::Genome(bool editor, Genome* n)
 {
+	next = n;
 	engineer = editor;
+	fitness = -1.0;
+
 	for(int g = 0; g < geneCount; g++)
 	{
 		genes[g] = Uniform();
 	}
-	next = n;
 }
 
 
@@ -26,9 +28,20 @@ double Genome::DegreeOfMatch(Genome* genome)
 	return 1.0 - match/(double)geneCount;
 }
 
+// Lazy evaluation
+
+double Genome::Fitness()
+{
+	if(fitness >= 0.0)
+		return fitness;
+	fitness = DegreeOfMatch(environment);
+	return fitness;
+}
+
 
 void Genome::Mutate()
 {
+	fitness = -1.0;
 	for(int g = 0; g < geneCount; g++)
 	{
 		if(Uniform() < mutateProportion)
@@ -48,11 +61,13 @@ void Genome::Mutate()
 
 void Genome::Edit()
 {
-	if(control)
+	if(controlExperiment)
 		return;
 
 	if(!engineer)
 		return;
+
+	fitness = -1.0;
 
 	for(int g = 0; g < geneCount; g++)
 	{

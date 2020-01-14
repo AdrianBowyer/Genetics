@@ -27,7 +27,6 @@ public:
 	void Edit();
 	Genome* ChildWith(Genome* parent2);
 	Genome* Next();
-	Genome* Previous();
 	bool IAmAnEngineer();
 	void Unlink(Genome* previous);
 	void PrintGenome();
@@ -35,16 +34,14 @@ public:
 private:
 	double genes[geneCount];
 	bool engineer;
+	double fitness;
 	Genome* next;
 
 };
 
 extern Genome* environment;
-extern bool control;
+extern bool controlExperiment;
 
-// Lazy evaluation
-
-inline double Genome::Fitness() { return DegreeOfMatch(environment); }
 inline Genome* Genome::Next() { return next; }
 inline bool Genome::IAmAnEngineer() { return engineer; }
 

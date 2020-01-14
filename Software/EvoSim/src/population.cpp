@@ -40,25 +40,28 @@ void Population::Breed()
 
 void Population::Cull()
 {
-	Statistics();
-
+	Genome* weakest = NULL;
+	double fitness = 1.0;
 	Genome* g = start;
-	Genome* nxt;
 	Genome* previous = NULL;
+	Genome* p = NULL;;
 	while(g)
 	{
-		nxt = g->Next();
-		if(g->Fitness() < fitnessAverage)
+		double f = g->Fitness();
+		if(f < fitness)
 		{
-			if(g == start)
-				start = nxt;
-			g->Unlink(previous);
-		} else
-		{
-			previous = g;
+			weakest = g;
+			fitness = f;
+			previous = p;
 		}
-		g = nxt;
+		p = g;
+		g = g->Next();
 	}
+
+	if(weakest == start)
+		start = weakest->Next();;
+	weakest->Unlink(previous);
+
 	statisticsValid = false;
 }
 

@@ -12,7 +12,7 @@ Genome* environment;
 
 Population* population;
 
-bool control = false;
+bool controlExperiment = false;
 
 // Remind the user what they can do.
 
@@ -30,11 +30,11 @@ void Prompt()
 	cout << " q: - quit" << endl<< endl;
 }
 
-// Decide how to process the results.
+// Decide what to do.
 
-void Control()
+void God()
 {
-	int populationTarget, generations;
+	int numberOfIndividuals, generations;
 
 	cout << "Type h for help." << endl;
 	while(1)
@@ -47,39 +47,48 @@ void Control()
 		{
 		case 'b':
 			cout << "The population is " << population->PopulationCount() << " what is the population target? ";
-			cin >> populationTarget;
-			populationTarget -= population->PopulationCount();
-			for(int i = 0; i < populationTarget; i++)
+			cin >> numberOfIndividuals;
+			numberOfIndividuals = numberOfIndividuals - population->PopulationCount();
+			for(int i = 0; i < numberOfIndividuals; i++)
 				population->Breed();
 			break;
 
 		case 'E':
-			control = true;
+			controlExperiment = true;
 			cout << "Control experiment - no engineering." << endl;
 			break;
 
 		case 'e':
-			control = false;
+			controlExperiment = false;
 			cout << "Engineering experiment - engineering allowed." << endl;
 			break;
 
 		case 'c':
-			population->Cull();
+			cout << "The population is " << population->PopulationCount() << "; reduce to how many? ";
+			cin >> numberOfIndividuals;
+			numberOfIndividuals = population->PopulationCount() - numberOfIndividuals;
+			for(int i = 0; i < numberOfIndividuals; i++)
+				population->Cull();
 			break;
 
 		case 'g':
-			cout << "Number of generations: ";
+			numberOfIndividuals = population->PopulationCount();
+			cout << "The population is: " << numberOfIndividuals << ". Number of generations: ";
 			cin >> generations;
-			cout << "Target population: ";
-			cin >> populationTarget;
+			cout << "Number to cull in each generation: ";
+			int cullCount;
+			cin >> cullCount;
+			cout << "fitness change:" << endl;
 			for(int g = 0; g < generations; g++)
 			{
-				int diff = population->PopulationCount() - populationTarget;
+				int diff = numberOfIndividuals - population->PopulationCount();
 				for(int d = 0; d < diff; d++)
 					population->Breed();
-				cout << "Generation " << g << " has average fitness " << population->AverageFitness() << endl;
-				population->Cull();
+				cout << g << ',' << population->AverageFitness() << endl;
+				for(int c = 0; c < cullCount; c++)
+					population->Cull();
 			}
+			cout << endl;
 			break;
 
 		case 's':
@@ -115,7 +124,7 @@ int main()
 	population = new Population();
 
 	Prompt();
-	Control();
+	God();
 
 	cout << "Bye!" << endl;
 
